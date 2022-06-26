@@ -181,7 +181,7 @@ impl Client {
                                         author_uin: rm.author_uin,
                                         time: rm.time,
                                     })
-                                    .for_each(async move |recall| {
+                                    .for_each(move |recall| async {
                                         self.handler
                                             .handle(QEvent::GroupMessageRecall(
                                                 GroupMessageRecallEvent {
@@ -210,7 +210,7 @@ impl Client {
                                     friend_uin: m.from_uin,
                                     time: m.msg_time,
                                 })
-                                .for_each(async move |m| {
+                                .for_each(move |m| async {
                                     self.handler
                                         .handle(QEvent::FriendMessageRecall(
                                             FriendMessageRecallEvent {
@@ -311,7 +311,7 @@ impl Client {
                                         .map(|uin| DeleteFriend { uin: uin as i64 })
                                         .collect();
                                     stream::iter(delete_friends)
-                                        .for_each(async move |delete| {
+                                        .for_each(move |delete| async {
                                             self.handler
                                                 .handle(QEvent::DeleteFriend(DeleteFriendEvent {
                                                     client: self.clone(),

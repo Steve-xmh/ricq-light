@@ -7,6 +7,12 @@ qq-android 协议的 rust 实现 移植于 [MiraiGo](https://github.com/Mrs4s/Mi
 - [ricq](https://crates.io/crates/ricq): 提供异步 API
 - [ricq-core](https://crates.io/crates/ricq-core): 不带 IO 的数据包构造器、解析器（通常用于ffi）
 
+## 分支说明
+
+本分支试图通过优化代码以实现以下目标：
+- 减小执行文件体积（尽可能不损失性能）
+- 可通过 `stable` 频道的 Rust 编译器编译
+
 ## 如何使用
 
 本项目是协议 lib，如果需要直接使用，可以参考 [examples](https://github.com/lz1998/ricq/tree/master/examples) 中的例子进行开发。

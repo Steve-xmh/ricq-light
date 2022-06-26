@@ -55,17 +55,19 @@ where
 
 impl IntoIterator for MessageChain {
     type Item = RQElem;
-    type IntoIter = impl Iterator<Item = RQElem> + 'static;
+    type IntoIter = Box<dyn Iterator<Item = RQElem> + 'static>;
 
     fn into_iter(self) -> Self::IntoIter {
-        self.0
+        let a = self
+            .0
             .into_iter()
             .filter_map(|e| match e {
                 msg::elem::Elem::SrcMsg(_) => None,
                 msg::elem::Elem::AnonGroupMsg(_) => None,
                 _ => Some(e),
             })
-            .map(RQElem::from)
+            .map(RQElem::from);
+        Box::new(a)
     }
 }
 

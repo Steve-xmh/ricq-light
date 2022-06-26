@@ -105,7 +105,7 @@ impl super::Client {
     }
 
     pub async fn uin(&self) -> i64 {
-        return self.engine.read().await.uin.load(Ordering::Relaxed);
+        self.engine.read().await.uin.load(Ordering::Relaxed)
     }
 
     pub async fn send(&self, pkt: Packet) -> RQResult<usize> {

@@ -17,7 +17,7 @@ where
     )
     .await
     .map_err(tokio::io::Error::from)
-    .flatten()
+    .and_then(|x| x)
 }
 
 pub async fn tcp_ping<Addr>(addr: Addr, timeout: Duration) -> Duration

@@ -9,6 +9,7 @@ use ricq_core::common::{group_code2uin, RQAddr};
 use ricq_core::highway::BdhInput;
 use ricq_core::msg::MessageChain;
 use ricq_core::pb;
+use ricq_core::pb::multimsg::MultiMsgApplyDownRsp;
 use ricq_core::structs::Status;
 use ricq_core::structs::SummaryCardInfo;
 use ricq_core::structs::{ForwardMessage, MessageReceipt};
@@ -374,11 +375,25 @@ impl super::Client {
                 resp.result
             )));
         }
-        let prefix=if let Some(pb::multimsg::ExternMsg { channel_type }) = resp.msg_extern_info && channel_type == 2 {
-            "https://ssl.htdata.qq.com".into()
+        fn get_default_prefix(resp: &mut MultiMsgApplyDownRsp) -> RQResult<String> {
+            let addr = SocketAddr::from(RQAddr(
+                resp.down_ip
+                    .pop()
+                    .ok_or_else(|| RQError::Other("ip is empty".into()))?,
+                resp.down_port
+                    .pop()
+                    .ok_or_else(|| RQError::Other("port is empty".into()))? as u16,
+            ));
+            Ok(format!("http://{}", addr))
+        }
+        let prefix = if let Some(pb::multimsg::ExternMsg { channel_type }) = resp.msg_extern_info {
+            if channel_type == 2 {
+                "https://ssl.htdata.qq.com".into()
+            } else {
+                get_default_prefix(&mut resp)?
+            }
         } else {
-            let addr = SocketAddr::from(RQAddr(resp.down_ip.pop().ok_or_else(||RQError::Other("ip is empty".into()))?,resp.down_port.pop().ok_or_else(||RQError::Other("port is empty".into()))? as u16));
-            format!("http://{}", addr)
+            get_default_prefix(&mut resp)?
         };
         let _url = format!(
             "{}{}",
